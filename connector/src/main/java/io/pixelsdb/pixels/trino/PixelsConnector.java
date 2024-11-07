@@ -199,8 +199,9 @@ public class PixelsConnector implements Connector
             }
 
             // finish the query after rollback transaction
-            if (config.getCloudFunctionSwitch() == PixelsTrinoConfig.CloudFunctionSwitch.AUTO ||
-                    config.getCloudFunctionSwitch() == PixelsTrinoConfig.CloudFunctionSwitch.SESSION)
+            // if (config.getCloudFunctionSwitch() == PixelsTrinoConfig.CloudFunctionSwitch.AUTO ||
+            //         config.getCloudFunctionSwitch() == PixelsTrinoConfig.CloudFunctionSwitch.SESSION)
+            if (config.getCloudFunctionSwitch() == PixelsTrinoConfig.CloudFunctionSwitch.AUTO)
             {
                 this.queryScheduleService.finishQuery(handle.getTransId(), handle.getExecutorType());
             }
@@ -257,17 +258,23 @@ public class PixelsConnector implements Connector
         PixelsTransactionHandle pixelsTransHandle = (PixelsTransactionHandle) transHandle;
         if (config.getCloudFunctionSwitch() == PixelsTrinoConfig.CloudFunctionSwitch.SESSION)
         {
-            boolean forceMpp = !PixelsSessionProperties.getCloudFunctionEnabled(session);
-            try
-            {
-                ExecutorType executorType = this.queryScheduleService
-                        .scheduleQuery(pixelsTransHandle.getTransId(), forceMpp);
-                // Issue #431: note that setExecuteType may not take effect on Trino workers.
-                pixelsTransHandle.setExecutorType(executorType);
-            } catch (QueryScheduleException e)
-            {
-                throw new TrinoException(PixelsErrorCode.PIXELS_QUERY_SCHEDULE_ERROR, e);
+            boolean enableCF = PixelsSessionProperties.getCloudFunctionEnabled(session);
+            if (enableCF) {
+                pixelsTransHandle.setExecutorType(ExecutorType.CF);
+            } else {
+                pixelsTransHandle.setExecutorType(ExecutorType.MPP);
             }
+            // boolean forceMpp = !PixelsSessionProperties.getCloudFunctionEnabled(session);
+            // try
+            // {
+            //     ExecutorType executorType = this.queryScheduleService
+            //             .scheduleQuery(pixelsTransHandle.getTransId(), forceMpp);
+            //     // Issue #431: note that setExecuteType may not take effect on Trino workers.
+            //     pixelsTransHandle.setExecutorType(executorType);
+            // } catch (QueryScheduleException e)
+            // {
+            //     throw new TrinoException(PixelsErrorCode.PIXELS_QUERY_SCHEDULE_ERROR, e);
+            // }
         }
 
         // bind external trace id if exists.
