@@ -53,6 +53,8 @@ public class PixelsTransactionHandle implements ConnectorTransactionHandle
      */
     private final AtomicDouble cfCostCents;
 
+    private double[] cfDurations;
+
     /**
      * Create a transaction handle.
      * @param transId the transaction id of the query, which is a single-statement read-only transaction.
@@ -121,5 +123,15 @@ public class PixelsTransactionHandle implements ConnectorTransactionHandle
     public double getCFCostCents()
     {
         return this.cfCostCents.get();
+    }
+
+    public void setCFDurations(double[] durations)
+    {
+        this.cfDurations = durations;
+    }
+
+    public double[] getCFDurations()
+    {
+        return this.cfDurations;
     }
 }

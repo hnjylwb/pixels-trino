@@ -248,6 +248,7 @@ public class PixelsSplitManager implements ConnectorSplitManager
                             transHandle.addCFCostCents(1.66667e-6 * outputCollection.getTotalGBMs());
                             transHandle.addCFCostCents(4e-5 * outputCollection.getTotalNumReadRequests());
                             transHandle.addCFCostCents(5e-4 * outputCollection.getTotalNumWriteRequests());
+                            transHandle.setCFDurations(outputCollection.getDurations());
                         } catch (Exception e)
                         {
                             logger.error(e, "failed to execute the scan operator using pixels-turbo");
