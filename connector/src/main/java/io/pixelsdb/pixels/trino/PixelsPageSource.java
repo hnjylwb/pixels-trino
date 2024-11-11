@@ -72,7 +72,6 @@ class PixelsPageSource implements ConnectorPageSource
     private final int BatchSize;
     private final PixelsSplit split;
     private final List<PixelsColumnHandle> columns;
-    private final PixelsTransactionHandle transactionHandle;
     private final String[] includeCols;
     private final Storage storage;
     private boolean closed;
@@ -92,12 +91,11 @@ class PixelsPageSource implements ConnectorPageSource
 
     private int batchId;
 
-    public PixelsPageSource(PixelsSplit split, List<PixelsColumnHandle> columnHandles, PixelsTransactionHandle transactionHandle,
+    public PixelsPageSource(PixelsSplit split, List<PixelsColumnHandle> columnHandles,
                             Storage storage, MemoryMappedFile cacheFile, MemoryMappedFile indexFile,
                             PixelsFooterCache pixelsFooterCache)
     {
         this.split = split;
-        this.transactionHandle = transactionHandle;
         this.storage = storage;
         this.columns = columnHandles;
         this.includeCols =  new String[columns.size()];
@@ -186,7 +184,6 @@ class PixelsPageSource implements ConnectorPageSource
         this.option.includeCols(includeCols);
         this.option.rgRange(split.getRgStart(), split.getRgLength());
         this.option.transId(split.getTransId());
-        this.option.timestamp(transactionHandle.getTimestamp());
 
         if (split.getConstraint().getDomains().isPresent() && !split.getColumnOrder().isEmpty())
         {
