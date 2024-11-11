@@ -53,7 +53,7 @@ public class PixelsTransactionHandle implements ConnectorTransactionHandle
      */
     private final AtomicDouble cfCostCents;
 
-    private double[] cfDurations;
+    private double[] cfDurations = new double[0];
 
     /**
      * Create a transaction handle.
